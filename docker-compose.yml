@@ -1,0 +1,87 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: onlyfans-db
+    environment:
+      POSTGRES_USER: mod
+      POSTGRES_PASSWORD: mod
+      POSTGRES_DB: moderation
+    # Standard host port. If another Postgres already holds 5432, change the
+    # host side here (e.g. "55432:5432") and set DATABASE_URL in api/.env to
+    # match; nothing inside the network is affected.
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mod -d moderation"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    # Standard host port, same caveat as Postgres above. Reachable as "redis"
+    # inside the network regardless of the host mapping.
+    ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  provider:
+    build: ./provider
+    ports: ["8001:8001"]
+    environment:
+      CALLBACK_URL: http://api:8000/provider/callback
+      PROVIDER_SECRET: dev-provider-secret
+      ASYNC_FRAME_THRESHOLD: "30"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request;urllib.request.urlopen('http://localhost:8001/_health')",
+        ]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  api:
+    build: ./api
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports: ["8000:8000"]
+    environment: &appenv
+      DATABASE_URL: postgresql+asyncpg://mod:mod@db:5432/moderation
+      REDIS_URL: redis://redis:6379/0
+      PROVIDER_URL: http://provider:8001
+      PROVIDER_SECRET: dev-provider-secret
+      SCREENING_MODE: ${SCREENING_MODE:-fixed}
+      MAX_ATTEMPTS: "5"
+      LEASE_SECONDS: "30"
+      LOG_LEVEL: INFO
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      provider: { condition: service_started }
+
+  worker:
+    build: ./api
+    command: python -m app.workq.worker
+    # A worker that dies must come back and resume from Postgres. This is also
+    # what makes the CRASH_AFTER_SCORE fault injection recoverable.
+    restart: unless-stopped
+    environment:
+      <<: *appenv
+      WORKER_CONCURRENCY: "4"
+    depends_on:
+      api: { condition: service_started }
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  web:
+    build: ./web
+    ports: ["5173:5173"]
+    environment:
+      VITE_API_BASE: http://localhost:8000
+    depends_on:
+      api: { condition: service_started }
