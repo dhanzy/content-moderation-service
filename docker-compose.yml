@@ -59,6 +59,12 @@ services:
       MAX_ATTEMPTS: "5"
       LEASE_SECONDS: "30"
       LOG_LEVEL: INFO
+      # Fault injection, off unless set in the shell that runs compose. Declared
+      # here because compose only forwards variables a service names: without
+      # these lines `REVIEW_FAIL=1 docker compose up -d api` sets the variable
+      # for the compose CLI and not for the container, and nothing happens.
+      REVIEW_FAIL: ${REVIEW_FAIL:-}
+      CRASH_AFTER_SCORE: ${CRASH_AFTER_SCORE:-}
     depends_on:
       db: { condition: service_healthy }
       redis: { condition: service_healthy }

@@ -1,0 +1,81 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --line: #262b36;
+  --text: #e6e8ec;
+  --muted: #949aa6;
+  --ok: #3fb950;
+  --warn: #d29922;
+  --bad: #f85149;
+  --accent: #58a6ff;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+main { max-width: 68rem; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+h1 { font-size: 1.5rem; margin: 0; }
+h2 { font-size: 1.1rem; margin: 0 0 .4rem; }
+
+.sub { color: var(--muted); margin: .25rem 0 1.5rem; font-size: .9rem; }
+.muted { color: var(--muted); font-size: .85rem; }
+.prompt { font-style: italic; margin-top: .2rem; }
+
+code { background: #0b0d11; padding: .1rem .35rem; border-radius: 4px; font-size: .85em; }
+
+.bar {
+  display: flex; align-items: center; gap: .75rem;
+  flex-wrap: wrap; margin-bottom: .75rem;
+}
+.samples { margin-bottom: 1.5rem; }
+
+select, button {
+  font: inherit; color: var(--text); background: var(--panel);
+  border: 1px solid var(--line); border-radius: 6px;
+  padding: .4rem .7rem; cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+button.ghost { font-size: .82rem; padding: .3rem .55rem; }
+button.danger:hover:not(:disabled) { border-color: var(--bad); color: var(--bad); }
+
+.notice {
+  background: var(--panel); border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  padding: .6rem .8rem; border-radius: 6px; font-size: .88rem;
+  word-break: break-word;
+}
+
+/* The three states are visually distinct on purpose: an empty queue and a
+   broken queue must never look like one another at a glance. */
+.panel {
+  border: 1px solid var(--line); border-radius: 8px;
+  padding: 1.25rem; background: var(--panel); margin: 1rem 0;
+}
+.panel.loading { border-left: 4px solid var(--muted); }
+.panel.failed  { border-left: 4px solid var(--bad); background: #221416; }
+.panel.empty   { border-left: 4px solid var(--ok); }
+.panel p { margin: .3rem 0 0; }
+
+table { width: 100%; border-collapse: collapse; margin: .75rem 0; font-size: .9rem; }
+th, td { text-align: left; padding: .55rem .5rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+td.actions { white-space: nowrap; text-align: right; }
+td.actions button + button { margin-left: .4rem; }
+
+.tag {
+  display: inline-block; padding: .1rem .45rem; border-radius: 4px;
+  background: #0b0d11; border: 1px solid var(--line);
+  font-size: .78rem; margin: 0 .25rem .25rem 0;
+}
+.tag.ok { color: var(--ok); border-color: #1d3a24; }
+.tag.warn { color: var(--warn); border-color: #3d3220; }
+
+footer { margin-top: 2.5rem; border-top: 1px solid var(--line); padding-top: 1rem; }

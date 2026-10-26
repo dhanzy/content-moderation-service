@@ -18,7 +18,14 @@ A few things I specified up front or changed afterwards:
   `uv.lock` per project, and the uv binary copied from its published image in
   the Dockerfiles rather than pip-installed, so the build does not depend on
   resolving its own tooling. `api/` and `provider/` are separate projects
-  because they are separate services.
+  because they are separate services. The UI uses **bun** with a committed
+  `bun.lock`; both images install with a frozen lockfile so a stale lock fails
+  the build rather than silently re-resolving.
+- **The three review-queue states are a discriminated union**, not an `items`
+  array beside a `loading` boolean and an `error` string. With flags, "failed"
+  and "empty" differ only by which flags happen to be set, and the incident was
+  exactly that confusion. With a union a failure carries no items at all, so the
+  bug is not expressible.
 - **The broken handler stays in the tree** behind `SCREENING_MODE=broken`,
   rather than living in git history. The brief asks for the incident to be
   reproduced first; keeping it switchable means every symptom gets a pair of
@@ -120,10 +127,16 @@ normalisation step applied too widely. Reading it would not have caught them.
 - **The burst videos in that workload are clean**, so it does not exercise the
   frame-truncation symptom. That one is covered by the test suite and by hand,
   not by the load run.
-- **The review UI does not exist.** The three states it must distinguish —
-  loading, failed, genuinely empty — are enforced and tested at the API layer
-  (`503` versus `200 []`), but nothing renders them. `docker compose up` fails
-  on that service; the README says so and gives the working service list.
+- **The UI has no automated tests.** The three states are modelled as a
+  discriminated union so a failure cannot be rendered as an empty list, and I
+  checked all three in a browser — loading, a `503` under `REVIEW_FAIL=1`, and a
+  genuinely empty queue — plus approve, reject and the `403` a member gets. But
+  there is no component or end-to-end test holding that in place, so a
+  regression there would not be caught by `pytest`.
+- **The UI is served by Vite's dev server**, not a built bundle behind a real
+  web server. `VITE_API_BASE` is baked in at build time, so a prebuilt bundle
+  could not be re-pointed by compose. Fine for an internal one-page tool,
+  wrong for production.
 - **The fully-native install path is untested.** My machine has the `psql` and
   `redis-cli` clients but no server packages, so the `apt install` instructions
   in the README are the standard recipe rather than something I proved.

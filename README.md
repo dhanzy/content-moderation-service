@@ -24,17 +24,18 @@ worker-death scenarios are measured in
 
 | Missing | Notes |
 | --- | --- |
-| `web` service (the one-page review UI) | The `web` service is declared in `docker-compose.yml` but has no source yet, so **plain `docker compose up` fails at that build**. Use the explicit service list below. The three states it must distinguish (loading / failed / empty) are already enforced and tested at the API layer: `503` with an error body versus `200 []`. |
 | Part 3 answers | Cost and scaling write-up still to come. |
 | Migrations | Schema is created with `create_all` behind an advisory lock, not Alembic. Fine for this exercise, wrong for production. |
+| The UI runs Vite's dev server | `web` serves through `bun run dev` rather than a built bundle behind a real web server, because `VITE_API_BASE` is baked in at build time and a prebuilt bundle could not be re-pointed by compose. A real deployment would build and serve the static output. |
 
 ---
 
 ## Requirements
 
 - Docker and Docker Compose (tested with Docker 28.5, Compose 2.40)
-- `uv` 0.8+ — only needed to run the tests from the host; the containers carry
-  their own uv
+- `uv` 0.8+ — only needed to run the tests or the load harness from the host;
+  the containers carry their own uv
+- `bun` 1.3+ — only needed to work on the UI outside Docker
 
 Nothing else. No Python or Node installation is required to run the stack.
 
@@ -43,25 +44,19 @@ Nothing else. No Python or Node installation is required to run the stack.
 ## Quick start
 
 ```bash
-# 1. Build the two application images (~3 min cold, mostly dependency install)
-docker compose build provider api
+docker compose up -d        # builds on first run, ~4 min cold
+docker compose ps
+```
 
-# 2. Start the backend
-docker compose up -d db redis provider api worker
+All six of `db`, `redis`, `provider`, `api`, `worker` and `web` should be
+`running`, with `db`, `redis` and `provider` reporting `(healthy)`.
 
-# 3. Confirm it is alive
+```bash
 curl -s localhost:8000/healthz
 #   {"ok":true,"screening_mode":"fixed"}
 ```
 
-Check everything came up:
-
-```bash
-docker compose ps
-```
-
-All five of `db`, `redis`, `provider`, `api`, `worker` should be `running`, with
-`db`, `redis` and `provider` reporting `(healthy)`.
+Then open the review queue at **<http://localhost:5173>**.
 
 To stop, and to wipe the database volume:
 
@@ -83,7 +78,7 @@ Prefer to run the Python processes directly, with a debugger or `--reload`? See
 | `provider` | **8001** | `provider:8001` | Fake moderation provider |
 | `db` | 5432 | `db:5432` | PostgreSQL 16 |
 | `redis` | 6379 | `redis:6379` | Queue backing store |
-| `web` | 5173 | — | Review UI (not implemented yet) |
+| `web` | **5173** | — | Review queue UI (React + TypeScript, bun) |
 
 `8000` and `8001` are exactly as the brief specifies.
 
@@ -206,6 +201,11 @@ cd api && uv run uvicorn app.main:app --port 8000 --reload
 ```bash
 # 3. worker (dispatcher, reconciler, re-screening sweep)
 cd api && uv run python -m app.workq.worker
+```
+
+```bash
+# 4. the review UI  ->  :5173  (optional; the API works without it)
+cd web && bun install && bun run dev
 ```
 
 `uv run` resolves each project's locked dependencies into a local `.venv` on
@@ -381,6 +381,55 @@ curl -s -o /dev/null -w '%{http_code}\n' -X POST localhost:8000/provider/callbac
 curl -s localhost:8001/_stats
 # {"calls":{"<media id>":1}, "mode":"ok"}
 ```
+
+---
+
+## The review queue page
+
+<http://localhost:5173> — React and TypeScript, dependencies managed with
+[bun](https://bun.sh) and locked in `web/bun.lock`.
+
+It does one job: show an admin the held media of their workspace, and let them
+approve or reject it. The part that matters is that it tells **three states**
+apart, which Required work 1 asks for explicitly:
+
+| State | What you see | Why it is separate |
+| --- | --- | --- |
+| **loading** | grey panel, "Loading…" | A request in flight is not an answer |
+| **failed** | red panel, "Could not load the queue", with the status and "this is **not** an empty queue" | The incident symptom: a failed request rendered as an empty list, so moderators saw "Nothing to review" for a morning while 40 items waited |
+| **empty** | green panel, "Nothing to review — the queue loaded successfully and no media is currently held" | Genuinely nothing waiting |
+
+In the code these are a discriminated union rather than an `items` array beside
+a `loading` boolean and an `error` string:
+
+```ts
+type QueueState =
+  | { kind: "loading" }
+  | { kind: "failed"; status: number | null; message: string }
+  | { kind: "ready"; items: HeldItem[] };
+```
+
+There is no combination of flags that can render a failure as an empty list,
+because a failure carries no items at all. "Empty" is `ready` with nothing in
+it, and the compiler keeps the two apart. `fetchReviewQueue` throws on any
+non-2xx, so a failure cannot reach the UI looking like data.
+
+To see the failed state for yourself:
+
+```bash
+REVIEW_FAIL=1 docker compose up -d api     # GET /review now answers 503
+docker compose up -d api                   # back to normal
+```
+
+The page also has buttons to create sample media — a held item, a blocked one, a
+clean one, the 60-frame video that is explicit only at the end, and a generation
+prompt that must be refused — so the queue can be demonstrated without reaching
+for `curl`. Switching identity in the dropdown shows the role rules: as
+`member_v` the queue answers `403` and renders as a failure, which is correct.
+
+An item showing `screened: no` is held because screening was unavailable rather
+than because a human needs to judge it. It has no provider result behind it, so
+approving it is refused with `409 never_screened`.
 
 ---
 
@@ -796,7 +845,9 @@ api/                      the service (own uv project)
       leases.py           job leasing, so one job runs once
       worker.py           dispatcher, reconciler, re-screening sweep
   tests/
-web/                      review UI (not implemented yet)
+web/                      review queue UI (own bun project)
+  src/api.ts              API client; throws on non-2xx so a failure is never data
+  src/App.tsx             the page, and the three-state union
 ```
 
 ---
