@@ -16,7 +16,7 @@ and locked in `uv.lock`.
 **Working and verified:** all nine screening rules, prompt refusal, the signed
 async callback path, workspace isolation, role checks, per-workspace fair
 queueing, per-error-class retries, outage re-screening, and the incident
-reproduction. 82 tests pass, and the 200-video burst, outage recovery and
+reproduction. 85 tests pass, and the 200-video burst, outage recovery and
 worker-death scenarios are measured in
 [Load, failure and recovery evidence](#load-failure-and-recovery-evidence).
 
@@ -24,9 +24,34 @@ worker-death scenarios are measured in
 
 | Missing | Notes |
 | --- | --- |
-| Part 3 answers | Cost and scaling write-up still to come. |
+| No circuit breaker | During an outage each item is held only once its own attempt has failed, which costs one provider timeout each. After a run of consecutive failures the dispatcher should mark everything already queued as held immediately instead of paying a timeout per item — in the measured outage that left 202 items sitting at `pending` for a minute. The behaviour is correct (nothing publishes) but the queue is slower to tell the truth than it needs to be. |
 | Migrations | Schema is created with `create_all` behind an advisory lock, not Alembic. Fine for this exercise, wrong for production. |
 | The UI runs Vite's dev server | `web` serves through `bun run dev` rather than a built bundle behind a real web server, because `VITE_API_BASE` is baked in at build time and a prebuilt bundle could not be re-pointed by compose. A real deployment would build and serve the static output. |
+
+**Time spent:** about nine hours, against the six to seven the brief suggests.
+The service, the rules and the tests came in roughly inside that window; the
+overrun is the load harness and the measured evidence below. I would rather hand
+over numbers I have actually taken than claims about how it would behave.
+
+---
+
+## What went wrong, in one table
+
+The five symptoms from the incident report, each reproducible in this repo
+against both the pre-fix and the post-fix handler.
+
+| Symptom | Root cause | Fix | Test |
+| --- | --- | --- | --- |
+| An explicit video went live in an unverified workspace | Only the first 8 frames of a video were scored, and the video turned explicit in its final second | Every frame is scored and the decision takes the **peak** score across all of them; a video that cannot be fully scored is held, never passed | `test_broken_misses_explicit_in_last_frame` / `test_fixed_blocks_explicit_in_last_frame_unverified` |
+| Media published while the provider was down | A provider timeout was treated as a pass | A call that returns nothing is a failed attempt. The item is held from the **first** failure, `screened_at` stays null, and the sweep re-screens it on recovery | `test_broken_publishes_unchecked_on_timeout` / `test_fixed_holds_from_the_very_first_failure` |
+| An AI generation of "a 16-year-old" was produced | Generation prompts were never screened at all | Prompts are refused before generation with `422`, on de-leeted text for word rules and untouched digits for age rules | `test_broken_lets_minor_prompt_through` / `test_fixed_refuses_minor_prompt` |
+| The provider bill roughly doubled | A redelivered job ran alongside an attempt already in flight, paying twice for the same work | Jobs are leased with a single conditional `UPDATE`, and `provider_results` is keyed on `media_id` so a second successful score cannot be stored | `test_broken_pays_twice_for_a_redelivered_job` / `test_fixed_scores_once_under_concurrent_redelivery` |
+| Moderators saw "Nothing to review" for a morning while 40 items waited | A failed review-queue request was rendered as an empty list | Three states as a discriminated union — loading, failed, genuinely empty — and a client that throws on any non-2xx, so a failure cannot arrive as data | `test_broken_shows_failure_as_empty_list` / `test_fixed_reports_review_failure_as_failure` |
+
+The thread running through all five: **nothing is treated as screened unless a
+provider result was stored for it.** `screened_at` is the only record of that,
+and every metric derives from it rather than from job state. A finished job was
+what the old code trusted, and that is what let the first two symptoms hide.
 
 ---
 
@@ -237,7 +262,7 @@ its own `moderation_test` database and Redis DB 1 regardless of what
 using.
 
 ```bash
-cd api && uv run pytest -q      # 82 passed
+cd api && uv run pytest -q      # 85 passed
 ```
 
 It reads `api/.env` too, and derives its connection details from `DATABASE_URL`
@@ -480,8 +505,15 @@ curl -s -X POST localhost:8001/_control \
   -H 'content-type: application/json' -d '{"mode":"ok"}'
 ```
 
-While the provider is in `timeout` or `error`, uploads are **held**, never
-published. When it returns to `ok`, the worker's re-screening sweep picks up
+While the provider is in `timeout` or `error`, an upload is **held as soon as an
+attempt on it fails**, stays `pending` until something has actually been tried,
+and is **never published** either way. The distinction is deliberate and is
+measured in
+[`pending` and `held` during an outage](#pending-and-held-during-an-outage):
+marking an item held before anything has been tried would be claiming we asked
+and failed when we had not.
+
+When the provider returns to `ok`, the worker's re-screening sweep picks up
 everything that was held because screening was unavailable and runs it again
 without waiting for a moderator.
 
@@ -529,14 +561,14 @@ From the host:
 cd api
 uv sync                 # first time only
 uv run pytest -q
-# 82 passed
+# 85 passed
 ```
 
 Or inside the container, with no host toolchain at all:
 
 ```bash
 docker compose exec api pytest -q
-# 82 passed
+# 85 passed
 ```
 
 Useful selections:
@@ -735,6 +767,307 @@ idempotency key and dedupe server-side. The client already sends one
 (`Idempotency-Key: <media_id>` in `screening/provider.py`); the fake provider
 deliberately ignores it and counts every call, which is what makes the cost
 visible here rather than hidden.
+
+---
+
+## Part 3 — cost, evasion and scale
+
+### Paid API, own models, or a mix
+
+A mix — and the split is decided by **who can legally or practically hold the
+data**, not by price. Price only settles the one commodity category.
+
+| Category | Where | Why |
+| --- | --- | --- |
+| explicit / nudity grading | paid API | Commodity, better calibrated than anything I would train, and at this volume the bill is noise. |
+| apparent age (`minor`) | paid API **plus a second, independent model** | The highest cost of error in the system. One model's confidence is not evidence; disagreement between two holds the item. |
+| known CSAM | specialist hash-matching service, only | The hash lists are not distributable. Self-hosting is not an option even in principle — see below. |
+| `sexual_violence`, `bestiality`, `self_harm` | paid API labels where the vendor publishes them, otherwise a fine-tuned open classifier | Rare enough that per-call price is irrelevant; recall matters more than cost. |
+| `real_person` / likeness | **self-hosted** | This is matching a face against the roster of performers who have consented, and that roster is our own private data. No vendor has it, and shipping it to one creates a worse problem than it solves. |
+| generation prompts | own rules plus an LLM classifier | Text, pre-generation, fractions of a cent. Already here as `screening/prompts.py`. |
+
+The principle: **buy the commodity classifiers, host what depends on our own
+private data, and never host the thing whose input data we are not allowed to
+hold.**
+
+### Rough monthly cost for 10,000 images and 1,000 one-minute videos
+
+**Frames are the unit, not items.** At one frame per second, 1,000 one-minute
+videos are 60,000 frames against the images' 10,000. The videos are 9% of the
+uploads and 86% of the bill.
+
+| | Items | Frames at 1 fps |
+| --- | --- | --- |
+| images | 10,000 | 10,000 |
+| one-minute videos | 1,000 | 60,000 |
+| **total** | **11,000** | **70,000** |
+
+Unit prices move and differ by vendor, so treat the rate as the assumption and
+the arithmetic as the point. Commodity image moderation sits in the region of
+**$0.50–$2.00 per 1,000 frames**; $1.00 is a fair working figure.
+
+| Line | Volume | Rate | Monthly |
+| --- | --- | --- | --- |
+| cheap pass, every frame | 70,000 frames | $1.00 / 1k | **$70** |
+| second opinion on `minor`, only for frames the first model does not call confidently adult (~15%) | 10,500 frames | $1.00 / 1k | **$11** |
+| CSAM hash lookups | 11,000 items | often free to qualifying platforms | **$0–$500** |
+| likeness matching, self-hosted | 70,000 frames | own CPU | **~$20** |
+| prompt screening (LLM, text) | ~3,000 generations | ~$0.0002 each | **~$1** |
+| **inference total** | | | **~$100 / month** plus whatever the hash service charges |
+
+About **one cent per upload**. Dedupe on a perceptual hash before billing
+anything — consecutive near-identical frames of a static scene collapse to one —
+and 60,000 video frames typically bill as 30–40,000, taking it nearer $70.
+
+**But the inference bill is not the cost of this system.** One moderator-hour is
+roughly the entire monthly model spend. At 11,000 items a month, a 3% hold rate
+is 330 human reviews, about eight hours of work:
+
+> The lever worth optimising is the **hold rate**, not the price per frame.
+
+Which is why the re-screening sweep earns more than it looks like it does. Items
+held because screening was *unavailable* resolve themselves when the provider
+returns and never reach a person. In the measured outage that was 18 items a
+sweepless queue would have handed to a moderator for no reason at all.
+
+It is also why I would not self-host at this volume. One always-on GPU is
+$400–$700 a month before any engineering; the API bill is $70. Self-hosting
+becomes the right answer at roughly **500,000 frames a month**, about seven times
+this volume, and even then I would move the cheap pass first and keep paying for
+the second opinion on `minor`.
+
+### How many frames to sample
+
+**1 fps is the floor for the prohibited categories, and the incident is the
+argument.** That video was explicit *only in its final second*. Sampling one
+frame every five seconds would have had a one-in-five chance of catching it, and
+a 20% chance of missing prohibited content is not a cost saving.
+
+1 fps does not scale to a 60-minute video (3,600 frames), so it is adaptive:
+
+1. **Cheap pass over every frame at 1 fps.** Self-hosted, so the per-frame cost
+   is near zero and "every frame" is affordable.
+2. **Perceptual-hash dedupe.** Collapse near-identical consecutive frames. Safe,
+   because it keys on the content being the same rather than on a frame's
+   position in the file.
+3. **Paid shortlist.** Scene-change keyframes, every frame the cheap pass scored
+   above a low threshold, and a fixed random sample on top, so that a blind spot
+   in the cheap model is not a blind spot in the whole pipeline.
+4. **Never a fixed cap.** "The first N frames" is symptom 2 of this incident. If
+   the budget cannot cover an item, the item **holds** — it does not pass. That
+   is already enforced by `decide([])` returning a hold rather than a publish.
+
+The rule underneath: the frame rate is a **recall** decision and the model tier
+is a **cost** decision. Trading recall for cost is how the incident happened.
+
+### Catching prompts that evade the check
+
+`screening/prompts.py` catches literal and lightly obfuscated phrasing today —
+and it is where I found the worst bug in this build. Normalising leetspeak turned
+`16-year-old` into `i6-year-old`, so the exact incident phrase was **allowed by
+the code written to stop it**. That is the shape of this whole problem: every
+layer of cleverness adds a place for a rule to go quietly dead. Production is
+five things, in descending order of what they buy:
+
+**1. Screen the output, not just the prompt.** This is the one that matters. A
+clean prompt can produce a prohibited image, by accident or by using a model or
+LoRA that skews young without being asked to. Prompt screening is a cheap
+pre-filter that saves generation cost and gives the user an immediate, specific
+refusal; **the image screen is the control.** It also removes the incentive —
+getting a prompt past the filter buys nothing when the result is screened
+anyway. A prompt-only system is one a determined user eventually beats.
+
+**2. Screen the concatenation of everything the user controls.** Splitting across
+fields works precisely because each field is checked alone. Prompt, negative
+prompt, title, caption, tags, filename, character name, LoRA name and the
+preceding turns of a chat-style generation UI all join into one string, and the
+rules run on that. `"a girl"` in one field and `"age: 16"` in another has to read
+as one sentence.
+
+**3. Normalise in layers, and run each rule on the layer it needs.** NFKC, fold
+Unicode confusables (Cyrillic `а`, dotless `ı`), strip zero-width and combining
+marks, collapse repeated characters — and keep the digits-intact text alongside
+the de-leeted one, because age rules need the digits and word rules need the
+de-leeting. Beyond leetspeak: word numbers (`sixteen`, already handled),
+ordinals, indirect ages (`turns 17 next month`, `class of 2012`, a birth year),
+and the euphemism vocabulary — which has to be maintained as data with an owner
+and a review cadence, not invented once and left to rot.
+
+**4. An LLM classifier over the joined text.** Pattern matching cannot reach
+paraphrase, translation, or a description that states no age at all. This is
+cheap and it is the only thing that catches a sentence built specifically to
+avoid every keyword. It does not replace the rules — those are deterministic,
+testable, fast, and what I would defend in an audit — it runs after them and may
+only escalate, never clear.
+
+**5. Measure it, and treat the account as a signal.** A red-team corpus in the
+repo, run in CI, with a recorded false-negative rate. I have none today, which is
+stated in [AI.md](AI.md); "I have only tried the cases I thought of" is not a
+safety claim. Separately: five refusals in an hour from one account is
+information about the *account*, not about five prompts. Rate-limit, then
+escalate the account for human review. Someone iterating against the filter is
+the cheapest signal available, and this build throws it away.
+
+### Adding CSAM hash matching
+
+**Where it goes: first, and before anything becomes durable.** On upload, before
+generation, before the scoring provider, before the file is stored anywhere it
+could be served from. Compute the hashes the licensed list requires (PhotoDNA,
+PDQ, MD5) and query the matcher.
+
+**On a match, this is not an ordinary `blocked`:**
+
+- The item goes to restricted quarantine storage and is **preserved, not
+  deleted** — deletion destroys evidence and is itself an offence in some
+  jurisdictions.
+- The account is locked, not warned.
+- A report goes to NCMEC, or the local equivalent, inside the statutory window.
+- **No moderator review and no admin override.** There is nothing to judge.
+  `POST /review/{id}/approve` refuses the category outright, the way it already
+  answers `409` for the absolute rules.
+- The match record is itself sensitive: hashes do not go into application logs,
+  and quarantine access is audited.
+
+**What it does not do.** Hash matching finds *known* material. A novel image
+hashes to nothing, and everything a text-to-image model produces is novel by
+definition. So it runs *alongside* the apparent-age classifier and never instead
+of it — the classifier is the only control that reaches new material, and prompt
+refusal the only one that reaches it before it exists. Treating a hash miss as a
+clean bill of health would be the same class of error as treating a timeout as a
+pass.
+
+**When the service is down: hold, never publish.** The same rule as every other
+screening dependency, and the architecture already does this. A failed call is a
+failed attempt; the item is held with `screening_unavailable:csam_hash`,
+`screened_at` stays null, retries continue, and approve is refused with
+`never_screened`, because no human can clear a check that never ran.
+
+Two deliberate differences from the scoring provider being down:
+
+- **A moderator cannot defer this one.** A normal held item is something a human
+  can look at and decide. This is a check with no human equivalent, so the item
+  simply waits.
+- **New generations are rejected outright rather than queued.** Accepting uploads
+  and holding them is fine — that backlog drains on recovery. But *generating*
+  media we cannot check is manufacturing unscreened inventory, so generation
+  returns an error while the matcher is down. Holding is the safe degradation for
+  work already in flight; it is not a licence to create more of it.
+
+### At one million uploads a day, what breaks first
+
+At the same 90/10 mix, 1M uploads/day is ~11.6 items/s average and perhaps 40/s
+at peak — but roughly **7 million frames a day**, ~80/s average and ~300/s peak.
+In the order things actually fall over:
+
+**1. The Redis fair queue — and not on throughput.** One Redis handles these
+operations at this rate without noticing. It breaks on two other things: the
+round-robin dispatcher walks the set of currently-active workspace lists on every
+pop, so with tens of thousands of simultaneously active workspaces that scan
+dominates the pop; and one Redis is a single failure domain holding the entire
+backlog. Fix: shard on `hash(workspace_id)`, one Redis and one worker pool per
+shard, so the round robin only ever covers the workspaces in its own shard.
+Fairness inside a shard is unchanged, and fairness across shards comes from
+giving each shard equal capacity. This is the first real piece of work, and
+nothing in the current build is sharded.
+
+**2. Postgres write amplification — and the safety metrics before it.** Per item:
+a media row, a job, N attempt rows, a result row, and the status updates. Five
+million small writes a day is not frightening in itself, but `job_attempts` and
+`provider_results` grow without bound, and `published_unchecked` is a **query** —
+instant over a thousand rows, minutes over a hundred million. The two numbers
+that prove safety becoming too slow to watch is a safety problem, not a
+performance one. Fix: partition by day, expire attempts after a week, and
+maintain `published_unchecked` as an incrementally-updated counter rather than a
+scan. Then shard the write path by workspace, because one primary has one writer.
+
+**3. The reconciler's polling sweep.** It looks for expired leases and outage
+holds every few seconds — free at this size, crushing at a hundred million rows.
+It needs an index on `(state, lease_expires_at)` and bounded batches. Cheap
+enough that I would add it before it hurts rather than after.
+
+**4. The provider bill, which flips the build-versus-buy answer.** 7M frames a
+day at $1 per 1,000 is ~$7,000 a day, north of $200,000 a month. Two or three
+GPUs serve 300 frames/s of a cheap classifier for a couple of thousand. The
+crossover sits far below this point, so by the time you are here the cheap pass
+is self-hosted, the paid API is reserved for the shortlist and the second opinion
+on `minor`, and the cost conversation is about GPU utilisation rather than
+per-call pricing.
+
+**5. Moderators — which is really the answer.** A 3% hold rate on 1M items a day
+is **30,000 human reviews a day**: around 750 person-hours, something like a
+hundred moderators per shift. No amount of engineering moves that number; only a
+lower hold rate does, which means better calibration and automatic resolution of
+everything held for "screening unavailable" rather than for a genuine judgement
+call. Engineering scales the pipeline. The pipeline's output is human work, and
+in practice that is the constraint that binds first.
+
+**And the honest answer about this build specifically:** it is single-node
+correct and multi-node *ready* — Postgres is the source of truth and leases are
+conditional updates, so a second worker is safe — but I have only ever run one
+worker process against one Redis. The sharding above is reasoned, not measured,
+and that is stated in [AI.md](AI.md).
+
+---
+
+## A short production plan
+
+### The first fifteen minutes
+
+Mitigate before diagnosing. The safe degradation is a backlog; the unsafe one is
+publishing.
+
+1. `GET /_metrics`. `published_unchecked` and `explicit_published_in_unverified`
+   must both be 0. **Non-zero is a breach, not a bug** — media is live that
+   nothing screened, and that is handled with a containment step, not a ticket.
+2. **Stop publishing.** Today the blunt version is `docker compose stop worker`:
+   nothing is screened, nothing is published, items accumulate at `pending`, and
+   Postgres keeps every one of them. A real deployment wants this as a flag, so
+   ingest keeps working while the decision path is frozen.
+3. `oldest_waiting_job_age_s`, and `media_by_status` for the shape. A sudden
+   **collapse** in `held` is as alarming as a spike — checks silently not running
+   is how this incident hid.
+4. The never-events:
+   `docker compose logs | grep -E 'timeout_treated_as_pass|review_failure_shown_as_empty|broken_mode_active'`.
+   Any hit names the fault immediately.
+5. `curl -s localhost:8001/_health` and the provider's own error rate, to tell
+   "our bug" from "their outage". Those have different fixes and only one of them
+   is ours.
+
+### Rolling the fix out
+
+The screening handler is selected by `SCREENING_MODE`, so a fix ships as a new
+handler with the previous one still selectable — **rollback is a variable, not a
+redeploy.** `api` and `worker` deploy separately, so the decision path can be
+rolled without touching ingest. One shard at a time, watching
+`published_unchecked` and the per-shard held rate between each.
+
+### When to roll back
+
+Decided in advance, so nobody is making the call while the fire is burning:
+
+- `published_unchecked > 0` at any point, or
+- `explicit_published_in_unverified > 0` at any point, or
+- the held rate moves by more than 2x in **either** direction — a collapse means
+  the checks stopped running, which is this incident exactly.
+
+Any one of those, roll back. No discussion, no "let's watch it another ten
+minutes".
+
+### Verifying recovery
+
+"The errors stopped" is not recovery. The window itself has to be re-examined:
+
+1. **Re-derive the verdicts.** Every item screened during the window has stored
+   provider scores. Re-run the decision function over those scores and compare
+   against the item's live status; any disagreement is an item published on a
+   wrong verdict, and it gets pulled. This is only possible because the raw
+   scores are kept rather than just the conclusion.
+2. **`published_unchecked = 0` sustained**, not sampled once. In the broken build
+   that number decays towards zero on its own as late retries backfill
+   `screened_at` — which is exactly how a breach hides from a single check.
+3. **`oldest_waiting_job_age_s` back to baseline, and the held backlog drained by
+   the re-screening sweep rather than by hand.** That last clause is the real
+   test: recovery means no human had to do anything.
 
 ---
 

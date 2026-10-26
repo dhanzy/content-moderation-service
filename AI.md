@@ -111,7 +111,7 @@ normalisation step applied too widely. Reading it would not have caught them.
 - Exactly one provider call per upload, checked against the provider's own
   counters, including under four concurrent deliveries of the same job and after
   forcing a job back to `queued` once it had already succeeded.
-- 82 tests passing, from the host and inside the `api` container.
+- 85 tests passing, from the host and inside the `api` container.
 - That compose environment beats `api/.env`, by setting a sentinel value and
   watching it win.
 
@@ -153,8 +153,18 @@ normalisation step applied too widely. Reading it would not have caught them.
   describe it rather than claim to have closed it.
 - **No migrations.** The schema is created with `create_all`. Fine here, wrong
   for production.
-- **Part 3 of the README is not written.** The cost and scaling answers are
-  outstanding.
+- **The part 3 cost figures are arithmetic over an assumed unit price, not
+  quotes.** I worked them from $1.00 per 1,000 frames because that is the middle
+  of the commodity range, and I say so in the README rather than presenting it as
+  a vendor's number. The ratios are what I would defend — frames outweighing
+  items 6:1, the self-hosting crossover being several times this volume, the
+  model spend being smaller than the moderator spend. The absolute totals would
+  need real quotes.
+- **The scaling answer is reasoned, not measured.** The Redis queue, the metrics
+  queries and the reconciler sweep are where I expect this to break at a million
+  uploads a day, and the arguments are structural ones about scans and single
+  writers. I have not load-tested any of them, and I have never run this with
+  more than one worker process or more than one Redis.
 
 ## What I can explain
 
