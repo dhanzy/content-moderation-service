@@ -121,6 +121,28 @@ async def approve(
     media = await _load_held(session, media_id, caller.workspace_id)
 
     result = await cached_result(session, media.id)
+
+    # Two different reasons an item can be held, and only one of them is a
+    # judgement call. A borderline score (0.5 to 0.8) has a provider result
+    # behind it and a human decides. An item held because screening was
+    # unavailable has no result at all -- there is nothing to judge, and
+    # publishing it would be publishing unchecked, which rule 5 forbids whatever
+    # an admin clicks. The re-screening sweep will deal with it once the provider
+    # is back.
+    if result is None:
+        log_event(
+            log,
+            "approval_refused_never_screened",
+            level=logging.WARNING,
+            workspace_id=caller.workspace_id,
+            media_id=media.id,
+            user_id=caller.user_id,
+        )
+        raise HTTPException(
+            status_code=409,
+            detail={"reasons": ["never_screened"], "status": media.status},
+        )
+
     if result is not None:
         peaks = peak_scores(result.frames)
         hard = [l for l in PROHIBITED_LABELS if peaks.get(l, 0.0) >= BLOCK_THRESHOLD]

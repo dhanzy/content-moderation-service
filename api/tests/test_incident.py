@@ -22,6 +22,7 @@ from app.db import Session
 from app.screening import broken, fixed
 from tests.conftest import (
     ADMIN_U,
+    ADMIN_V,
     MEMBER_U,
     MEMBER_V,
     explicit_at_end,
@@ -48,6 +49,72 @@ async def test_broken_publishes_unchecked_on_timeout(client):
     assert row.status == "published", "broken handler should publish on timeout"
     # The damning part: live, with nothing behind it.
     assert row.screened_at is None, "published without ever being screened"
+
+
+async def test_fixed_holds_from_the_very_first_failure(client):
+    """Rule 5 applies immediately, not once the retry budget is spent.
+
+    The brief speaks of "media held because of the outage", so an item we cannot
+    get a decision for must read as held straight away. Leaving it pending for
+    the minute the retries take would hide it from the review queue and from
+    anyone reading its status during an outage.
+    """
+    response = await client.post("/media", json=video([{"explicit": 0.01}] * 3), headers=MEMBER_V)
+    media_id = response.json()["id"]
+
+    await set_provider("timeout")
+    assert await fixed.handle(await job_id_for(media_id)) == "retry"
+
+    row = await media_row(media_id)
+    assert row.status == "held", f"expected held after one failed attempt, got {row.status}"
+    assert any("screening_unavailable" in r for r in row.reasons)
+    # Still not screened: a provisional hold must never look like a decision.
+    assert row.screened_at is None
+
+    # And it is visible to a moderator rather than invisible in a queue.
+    queue = (await client.get("/review", headers=ADMIN_V)).json()
+    assert media_id in [item["id"] for item in queue]
+
+
+async def test_fixed_outage_hold_cannot_be_approved(client):
+    """An admin may clear a borderline score, not an item with no score at all.
+
+    This is the hole that holding-on-first-failure would otherwise open: the
+    item is held, so it reaches the approve route, but no provider result exists
+    and publishing it would be publishing unchecked.
+    """
+    response = await client.post("/media", json=video([{"explicit": 0.01}] * 3), headers=MEMBER_V)
+    media_id = response.json()["id"]
+
+    await set_provider("timeout")
+    await fixed.handle(await job_id_for(media_id))
+    assert (await media_row(media_id)).status == "held"
+
+    approve = await client.post(f"/review/{media_id}/approve", headers=ADMIN_V)
+    assert approve.status_code == 409, approve.text
+    assert approve.json()["detail"]["reasons"] == ["never_screened"]
+
+    row = await media_row(media_id)
+    assert row.status == "held", "a refused approval must leave it held"
+    assert row.screened_at is None
+
+
+async def test_fixed_outage_hold_resolves_itself_when_the_provider_returns(client):
+    """Recovery needs no human: a later attempt overwrites the provisional hold."""
+    response = await client.post("/media", json=video([{"explicit": 0.01}] * 3), headers=MEMBER_V)
+    media_id = response.json()["id"]
+
+    await set_provider("timeout")
+    await fixed.handle(await job_id_for(media_id))
+    assert (await media_row(media_id)).status == "held"
+
+    await set_provider("ok")
+    assert await _run_now(media_id) == "scored"
+
+    row = await media_row(media_id)
+    assert row.status == "published"
+    assert row.screened_at is not None
+    assert await provider_calls(media_id) == 2, "one failed call, then one that worked"
 
 
 async def test_fixed_holds_on_timeout(client):

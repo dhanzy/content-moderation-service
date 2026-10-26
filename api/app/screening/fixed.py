@@ -177,6 +177,23 @@ async def handle(job_id: str) -> str:
 
         if prov.should_retry(error_class, attempt_no):
             delay = prov.backoff_delay(error_class, attempt_no, outcome.retry_after)
+
+            # Rule 5 applies from the first failure, not from the end of the
+            # retry budget. An item we cannot get a decision for is held now, so
+            # that a read of its status during an outage says "held" rather than
+            # "pending", and so that it is visible in the review queue instead of
+            # sitting invisibly in a queue for the minute the retries take.
+            #
+            # Retrying continues underneath: a later success overwrites this with
+            # the real verdict, and the re-screening sweep picks these up when
+            # the provider recovers. screened_at stays null throughout, so a
+            # provisional hold can never be mistaken for a screened item.
+            if media.status in ("pending", "held") and media.screened_at is None:
+                await apply_decision(
+                    session, media, held_for_no_decision(error_class), screened=False
+                )
+                await session.commit()
+
             await release(
                 session,
                 job,

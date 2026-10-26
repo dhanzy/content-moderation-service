@@ -110,11 +110,16 @@ normalisation step applied too widely. Reading it would not have caught them.
 
 ## What I have not verified
 
-- **The load and recovery evidence is missing.** The 200-video burst workload,
-  the worker-death demonstration and the before-and-after metrics table are not
-  recorded. The fairness, retry and re-screening code is written and the
-  mechanisms are tested individually, but I have not run the workload or
-  produced the numbers. This is the largest gap and I ran out of time on it.
+- **The load numbers come from one run each, on one laptop.** The 200-video
+  burst, the outage and the worker-death scenario are now measured and recorded
+  in `evidence/`, but each figure is a single sample on a machine also running
+  Docker, Postgres and Redis locally. The gaps are wide enough that I trust the
+  direction (images decided at 5.4s while the burst ran to 13.3s; 19 unchecked
+  publishes versus 0), not the precision. I have not run them repeatedly, on
+  quiet hardware, or with more than one worker process.
+- **The burst videos in that workload are clean**, so it does not exercise the
+  frame-truncation symptom. That one is covered by the test suite and by hand,
+  not by the load run.
 - **The review UI does not exist.** The three states it must distinguish —
   loading, failed, genuinely empty — are enforced and tested at the API layer
   (`503` versus `200 []`), but nothing renders them. `docker compose up` fails

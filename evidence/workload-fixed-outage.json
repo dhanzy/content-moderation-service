@@ -1,0 +1,1672 @@
+{
+  "summary": {
+    "label": "fixed",
+    "screening_mode": "fixed",
+    "outage": true,
+    "submitted": 220,
+    "decided": 220,
+    "wall_s": 46.9,
+    "statuses": {
+      "published": 220
+    },
+    "published_unchecked": 0,
+    "provider_calls_per_upload": 1.114,
+    "oldest_waiting_job_age_s": 0.0,
+    "explicit_published_in_unverified": 0,
+    "media_with_duplicate_calls": 21,
+    "max_calls_for_one_item": 3,
+    "latency_burst_videos": {
+      "count": 200,
+      "median_s": 39.52,
+      "p95_s": 45.46,
+      "max_s": 46.58
+    },
+    "latency_steady_images": {
+      "count": 20,
+      "median_s": 28.98,
+      "p95_s": 44.62,
+      "max_s": 44.62
+    }
+  },
+  "events": [
+    {
+      "t": 0.11,
+      "event": "reset_done"
+    },
+    {
+      "t": 0.14,
+      "event": "provider_outage_begins",
+      "mode": "timeout"
+    },
+    {
+      "t": 0.14,
+      "event": "burst_submit_begin",
+      "videos": 200
+    },
+    {
+      "t": 1.17,
+      "event": "burst_submit_done",
+      "accepted": 200
+    },
+    {
+      "t": 5.58,
+      "event": "steady_submit_done",
+      "images": 20
+    },
+    {
+      "t": 30.69,
+      "event": "during_outage",
+      "published_unchecked": 0,
+      "oldest_waiting_s": 30.43,
+      "by_status": "{\"pending\": 202, \"held\": 18}",
+      "metrics": {
+        "media_total": 220,
+        "media_by_status": {
+          "pending": 202,
+          "held": 18
+        },
+        "published_unchecked": 0,
+        "explicit_published_in_unverified": 0,
+        "oldest_waiting_job_age_s": 30.43,
+        "job_states": {
+          "queued": 216,
+          "running": 4
+        },
+        "attempt_states": {
+          "failed": 20,
+          "in_flight": 4
+        },
+        "provider_results_stored": 0,
+        "provider_calls_total": 24,
+        "media_with_duplicate_calls": 4,
+        "provider_calls_per_upload": 0.109,
+        "queue_depth": {
+          "ws_unverified": 2978,
+          "ws_verified": 59,
+          "_delayed": 3
+        }
+      }
+    },
+    {
+      "t": 30.72,
+      "event": "provider_recovered",
+      "mode": "slow",
+      "delay_ms": 200
+    },
+    {
+      "t": 46.85,
+      "event": "outage_holds_settled"
+    },
+    {
+      "t": 46.9,
+      "event": "done",
+      "wall_s": 46.9
+    }
+  ],
+  "metrics_after": {
+    "media_total": 220,
+    "media_by_status": {
+      "published": 220
+    },
+    "published_unchecked": 0,
+    "explicit_published_in_unverified": 0,
+    "oldest_waiting_job_age_s": 0.0,
+    "job_states": {
+      "done": 220
+    },
+    "attempt_states": {
+      "scored": 220,
+      "failed": 25
+    },
+    "provider_results_stored": 220,
+    "provider_calls_total": 245,
+    "media_with_duplicate_calls": 21,
+    "provider_calls_per_upload": 1.114,
+    "queue_depth": {
+      "ws_unverified": 2971,
+      "_delayed": 0
+    }
+  },
+  "items": [
+    {
+      "media_id": "e3de3fae31234783955f72e94a445e19",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 46.582
+    },
+    {
+      "media_id": "4010cfb7f5d24fffa3fcf36fb09ada69",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 46.562
+    },
+    {
+      "media_id": "d038bd2f6fd84a05ae333772d3abfab6",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 45.444
+    },
+    {
+      "media_id": "4f8d57cc2a28489fba79c933d3a1c376",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 46.554
+    },
+    {
+      "media_id": "786fd8f15a3d4803930c9fdd1d4a4069",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 46.558
+    },
+    {
+      "media_id": "fbd654e5a8bc4e16b19172905f8067c9",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 45.453
+    },
+    {
+      "media_id": "18d307abe78847d0b45e93fa817580c0",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 45.459
+    },
+    {
+      "media_id": "81c76cef1d8b42a9aa92c7acd2c75e51",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 45.464
+    },
+    {
+      "media_id": "7e34419ba6e646f5845257645e011896",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 45.459
+    },
+    {
+      "media_id": "9fffac96ba024cdca1f98206444991bc",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 45.465
+    },
+    {
+      "media_id": "3a6fed19254f48e1b71dcfe6f918bf33",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 45.47
+    },
+    {
+      "media_id": "8dc5213a1d0745c59987f612891c05d0",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 45.474
+    },
+    {
+      "media_id": "96bcf7ee143346999bf53ba1843bbd43",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 45.479
+    },
+    {
+      "media_id": "71edc15c07964c2ab87b382ca7072a9b",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 45.479
+    },
+    {
+      "media_id": "5f76f4858691459483c57328a028880d",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 31.746
+    },
+    {
+      "media_id": "92bca3015d434db39ff3763d68465600",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 31.745
+    },
+    {
+      "media_id": "dca58462df0f4073a21e50a379e3570c",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 31.746
+    },
+    {
+      "media_id": "de7a92b93fa3408191113013b30d7016",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 31.745
+    },
+    {
+      "media_id": "e671adfb1eaf48b38173515bf02e2f16",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 31.744
+    },
+    {
+      "media_id": "90961578ba604d0ab9761af1f61ca4e3",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 31.743
+    },
+    {
+      "media_id": "7cb6be29966944babb9d6a5cef0bb160",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 31.744
+    },
+    {
+      "media_id": "d0bcc572e0e94f85b11a33864465b751",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 31.743
+    },
+    {
+      "media_id": "b027ec743005402b8742b3af6fa46e7f",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 32.844
+    },
+    {
+      "media_id": "053f3568bcc84cb2b9146b48bf74b691",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 32.854
+    },
+    {
+      "media_id": "a690e377ecad4ae1ad199b2b62455234",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 32.861
+    },
+    {
+      "media_id": "0904319a46db49e4ba6de6741bc80260",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 32.864
+    },
+    {
+      "media_id": "037fabbfea39476fb4fada2fe11ab557",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 32.865
+    },
+    {
+      "media_id": "4c73456e11bf442ebd0991e159e64d10",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 34.003
+    },
+    {
+      "media_id": "d1d2d6f41aec43c9822e271fd83853f6",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 34.001
+    },
+    {
+      "media_id": "0fc0b340b4974ada920713bda2c67ced",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 34.0
+    },
+    {
+      "media_id": "fb10032661bb46e3a7db04325630b224",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 35.195
+    },
+    {
+      "media_id": "ce5137d0c33049a0886664534c4a3e93",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 35.193
+    },
+    {
+      "media_id": "1a4dd4ca0ecc4a90b0b3cb12f8cb9aa3",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 35.194
+    },
+    {
+      "media_id": "71ece58eea4342bc8d9bb004dfa0f998",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 35.194
+    },
+    {
+      "media_id": "593a20b0d77d46758465d473cdec4f77",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 35.193
+    },
+    {
+      "media_id": "335687d1708c462cb0b03d5acdf9e512",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 35.191
+    },
+    {
+      "media_id": "cdaf1195fe5d436292690a931f7fdcea",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 35.19
+    },
+    {
+      "media_id": "c9d29bfcdedb45558c3ef4e31c724b63",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 35.191
+    },
+    {
+      "media_id": "0be9401366fc48f0b19058914e9f2fbe",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 35.19
+    },
+    {
+      "media_id": "09a8f1eb914e41f2b29fef593f5d133a",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 35.188
+    },
+    {
+      "media_id": "df7caf1224bf4d85877879e519000fca",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 35.191
+    },
+    {
+      "media_id": "7ec67921f051440caeec26f3f0de4575",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 35.19
+    },
+    {
+      "media_id": "f28eac6facf24ab1ae8025002b5f9339",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 35.19
+    },
+    {
+      "media_id": "83a0c58f6d184adcb61a8e64b2ebdcde",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.191
+    },
+    {
+      "media_id": "dc5d36d8f6a9433a96fc24741479e7c9",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.192
+    },
+    {
+      "media_id": "4ab320e8a30f41a4a84cbeeba2ff7ae3",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.192
+    },
+    {
+      "media_id": "26387f712c4242589af35a56b54db892",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.192
+    },
+    {
+      "media_id": "2fb67f2d7e22425985d5c8cfb99a19d8",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.193
+    },
+    {
+      "media_id": "f13bea04347e4f938094232299b6159f",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.191
+    },
+    {
+      "media_id": "879ee95e09124b0fa4b2afeb321f3acf",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.188
+    },
+    {
+      "media_id": "60a8b3f2148b4e6db8eae20c03ae5336",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.19
+    },
+    {
+      "media_id": "5833b51853a140acacd46e70e4a8b9c9",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.188
+    },
+    {
+      "media_id": "42f7b5ed994d414b90bb7ef142cf7ef2",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.189
+    },
+    {
+      "media_id": "a6a74b5de0e44b3b8cbfe9a652cc07d6",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.187
+    },
+    {
+      "media_id": "6674761d9caa4d5faea00bf2740a9acf",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.19
+    },
+    {
+      "media_id": "cc374f1d9b1d44f7a30f72e703a8ccbe",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.19
+    },
+    {
+      "media_id": "771b223dc5974746b27be3971b5f4b5f",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.191
+    },
+    {
+      "media_id": "10e2acf0ae504e8abb503b0219ba11f1",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.19
+    },
+    {
+      "media_id": "5daba9f7c5ca47099ffe03c40a4a753c",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.19
+    },
+    {
+      "media_id": "9ffb0c4d8e654431bee559a0bdf21a92",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.187
+    },
+    {
+      "media_id": "8b9135d23b584da990155d07840500a9",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 36.198
+    },
+    {
+      "media_id": "63f7aac1d7264ad4a1fa8ec63062904d",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.135
+    },
+    {
+      "media_id": "df6520bb59174e2daaea82a8ddd18372",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.134
+    },
+    {
+      "media_id": "a9b856bd7d554c4d89d418e43c79ba9d",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.14
+    },
+    {
+      "media_id": "9a1286e08ec04dc98bfa64e28dff4dfe",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.141
+    },
+    {
+      "media_id": "9b6abc510fd34c2a925c7a4697802001",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.142
+    },
+    {
+      "media_id": "38a24ebee2c74a979114ff6c3b5df986",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.146
+    },
+    {
+      "media_id": "f74e3bd22e87424e98c92e38bf2ceb87",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.146
+    },
+    {
+      "media_id": "02cbbf2b0325423f925afa516e5a34dd",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.143
+    },
+    {
+      "media_id": "014505849b4c4a4096796458ed4addd7",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.14
+    },
+    {
+      "media_id": "808d055a1d554374aceee34f26f85544",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.139
+    },
+    {
+      "media_id": "5dd569f36b7c462fbe7c5cf6869f6e32",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.138
+    },
+    {
+      "media_id": "4a2009f3a7964a22a72ca1afc75c5b92",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.136
+    },
+    {
+      "media_id": "8bef2874297f4b6f9eb4fe25a75c5cc9",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.142
+    },
+    {
+      "media_id": "646e82928ce340418c8019f5ea19e559",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.141
+    },
+    {
+      "media_id": "5b1135b42a4746d78840e1a1d609ef88",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.14
+    },
+    {
+      "media_id": "42a627b7b6ec4c889bdb8196864b6b32",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.138
+    },
+    {
+      "media_id": "c7fee572aa4348ba82820846946e76e2",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.142
+    },
+    {
+      "media_id": "a084035083bc49c4b06721ed87e1aedb",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.997
+    },
+    {
+      "media_id": "7f51911b6b684798a4615468e0dd08c2",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.993
+    },
+    {
+      "media_id": "b5b50393c140406482b63141af1d7265",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.995
+    },
+    {
+      "media_id": "c84d359741de43c8ae53e79e340ba92f",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.995
+    },
+    {
+      "media_id": "1bc6d607320247c6bc0af5d943d02d23",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.998
+    },
+    {
+      "media_id": "4c2645933a6b4647a7af24cb5535084a",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 37.999
+    },
+    {
+      "media_id": "c6b708176e584809a48f92c22e24397e",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.004
+    },
+    {
+      "media_id": "15a564340a6643ef82792c2e100675b7",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.007
+    },
+    {
+      "media_id": "411899e28a9648749e2546d554a8bca7",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.008
+    },
+    {
+      "media_id": "7792bc3ddad04b0d89df0b97658ae5f3",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.01
+    },
+    {
+      "media_id": "8759083583ff43a9a254d869e5c1bc28",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.01
+    },
+    {
+      "media_id": "634601f341954976be60f726d773827c",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.013
+    },
+    {
+      "media_id": "47eef0c1e0ac4b13b72997351e6f6559",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.015
+    },
+    {
+      "media_id": "b52149f898b34c44a26e4b118e9d623f",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.014
+    },
+    {
+      "media_id": "05467c6403ff428dba4987444271bf99",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.016
+    },
+    {
+      "media_id": "24022cc12e034ebc9ed93670d8ef7c6d",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.015
+    },
+    {
+      "media_id": "03aba5a9d90e4413b7fc4dcd01eb3aa0",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.813
+    },
+    {
+      "media_id": "832935e4db22443eaea934c2b7acd1b3",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.813
+    },
+    {
+      "media_id": "fef07406330440ca880d25c2764da561",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.811
+    },
+    {
+      "media_id": "88b10d1ed6f641b0abeef56e0e59596f",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.809
+    },
+    {
+      "media_id": "4d5c998332ed42d69299bcf6c4154204",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.806
+    },
+    {
+      "media_id": "fde70b9569cc499bbb8da785bbc7c06f",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.807
+    },
+    {
+      "media_id": "0cc03b08e78c4251a7a95333b7df9cd5",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.808
+    },
+    {
+      "media_id": "4fd24a6f7d1b47c599a5ee76fb322668",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.809
+    },
+    {
+      "media_id": "81c6dc52ed5c46c7aed374f321c74ef0",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.807
+    },
+    {
+      "media_id": "d33b0e1a8ba14765b5699fd38898be89",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.809
+    },
+    {
+      "media_id": "00462143affa48a2a9dfeb4f9cb6cd34",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.809
+    },
+    {
+      "media_id": "6edfa02e3ca74241ab1660cc42aa1e0f",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.807
+    },
+    {
+      "media_id": "cc8580a9c51c44e5bdba624a0b1b8231",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.807
+    },
+    {
+      "media_id": "8463234f68f747498744be800d2cba60",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 38.807
+    },
+    {
+      "media_id": "5c3d2ab37fb04ca6874871115f6b5db1",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 39.51
+    },
+    {
+      "media_id": "d549abbd8f544277a8d3205d7677ebef",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 39.512
+    },
+    {
+      "media_id": "fec7e24facad4e0da7bdaca42192c090",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 39.514
+    },
+    {
+      "media_id": "d19103dd719f4c328a0c81ea7d5c425b",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 39.516
+    },
+    {
+      "media_id": "160991d03567448cbd5842de86322d85",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 39.517
+    },
+    {
+      "media_id": "79c45da9e50d4ee78bcdb527563bb33c",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 39.518
+    },
+    {
+      "media_id": "4c68f964991749baae12e2f8591d4906",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 39.517
+    },
+    {
+      "media_id": "33aa42d9f2c9442db5f4e8dc70bc0857",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 39.517
+    },
+    {
+      "media_id": "66917aeff3ac4500a3fdc19ca887a261",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 39.518
+    },
+    {
+      "media_id": "5073b20d70be4861bd5f6051ead489cf",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 39.517
+    },
+    {
+      "media_id": "5d4e9d13a2574ea697b5f3b79015152b",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 39.518
+    },
+    {
+      "media_id": "650b489c689c4529be74359574084a74",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 39.519
+    },
+    {
+      "media_id": "98bfa11932994180b96aae5d3bd692d6",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 39.523
+    },
+    {
+      "media_id": "32500c6d265c4b5c96f6e54dca3f39ab",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.178
+    },
+    {
+      "media_id": "c032b6b79bf84b67a349edc13829b3b9",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.186
+    },
+    {
+      "media_id": "489c427ac9c44d7dab6655373da7dfaf",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.186
+    },
+    {
+      "media_id": "b95933b476e44f2b891449fdc0cac603",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.186
+    },
+    {
+      "media_id": "7ce15976a94d4df8b56103e7291f9f00",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.191
+    },
+    {
+      "media_id": "09f2cedff0ce47b4a536900798cc6739",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.196
+    },
+    {
+      "media_id": "4e94172b278d4595b0519c57349e6f4e",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.198
+    },
+    {
+      "media_id": "b401ddb6986a4a9f9d4bfb3f41162724",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.2
+    },
+    {
+      "media_id": "9bda0dc459c946b4a6e29c2c5f8aec6f",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.201
+    },
+    {
+      "media_id": "13911208889d4da3bfbdad0e717882d9",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.202
+    },
+    {
+      "media_id": "ac1ce59039e1480b851ab432ac5b3d00",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.203
+    },
+    {
+      "media_id": "8c1d55538ac74d5bbe26968a576b642e",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.808
+    },
+    {
+      "media_id": "1dd3082d8a184495a0363fd1ff6b92c8",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.813
+    },
+    {
+      "media_id": "90fad758e0b14e0c9d52c492e9f095d7",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.818
+    },
+    {
+      "media_id": "30f5a2986b584fcd8970117661b53cc1",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.82
+    },
+    {
+      "media_id": "6319a9caa85f4a16b8e126cb40098564",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.824
+    },
+    {
+      "media_id": "f6c9f51518494f63b776d9d4ebf07015",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.829
+    },
+    {
+      "media_id": "c1fd6b000f2b4d3eace2bc9b30a55e25",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.832
+    },
+    {
+      "media_id": "04e37e3c942f408082db0042adc123af",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.838
+    },
+    {
+      "media_id": "c2d5e671af294fe5a1c78d184fd14bdc",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 40.845
+    },
+    {
+      "media_id": "adaa90c06c1b4ceda877b07990501ce8",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.422
+    },
+    {
+      "media_id": "489ba59964694b13b9f48c93f53f9473",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.426
+    },
+    {
+      "media_id": "d900d58f056e407b8c2d4b82b09a5d15",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.43
+    },
+    {
+      "media_id": "bf7e2e1f2e7e48aab25672ee87c677fb",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.433
+    },
+    {
+      "media_id": "9ab8dbcfe0d94b7db96ca363d5a8e1b6",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.434
+    },
+    {
+      "media_id": "9d5f6b0d6f2945098552891dc499fa57",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.437
+    },
+    {
+      "media_id": "8224eb7ee37e4c59ae52514bc449f05f",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.439
+    },
+    {
+      "media_id": "f2a5da98d31846248e3ab79b19111fa6",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.439
+    },
+    {
+      "media_id": "3eabb8c8b5ca4c5a9b0f7519eca95b0e",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.443
+    },
+    {
+      "media_id": "c4ea689125e84e13bd26a4e93f570dfb",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.441
+    },
+    {
+      "media_id": "89a6c6e8c31c4f6e9913eb005823f735",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.443
+    },
+    {
+      "media_id": "9efdcd0cd0194613a3d95f1b3e898629",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.443
+    },
+    {
+      "media_id": "06d029bfceaf43d79cc5f7e587f0a0ce",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.909
+    },
+    {
+      "media_id": "d517546e8d8944ef8351eeed1b6c0f1d",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.909
+    },
+    {
+      "media_id": "288544da96b1439993810bc5168c58e0",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.911
+    },
+    {
+      "media_id": "a7ce45dd2cbf4635a7a5057e485d090f",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.908
+    },
+    {
+      "media_id": "3d4dc465094a42d089c3268b8b1500b6",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.91
+    },
+    {
+      "media_id": "b8a5abbddbf74480808b816388152d08",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.91
+    },
+    {
+      "media_id": "4684028ed6ba43baa03f9afd0b337737",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.909
+    },
+    {
+      "media_id": "f22b7f4baa154f1bbb4632c84e3b56a0",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 41.909
+    },
+    {
+      "media_id": "86e479187e734f639b522731938924bc",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 42.338
+    },
+    {
+      "media_id": "6499b8e548bb43ce91081f60a69e5077",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 42.336
+    },
+    {
+      "media_id": "019a303b367c4714a06d6c334e5f88ee",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 42.345
+    },
+    {
+      "media_id": "26d051dde61b42ea8d285305798d5ea2",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 42.342
+    },
+    {
+      "media_id": "06de1e45b1814232a831f8bc6830bbe9",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 42.783
+    },
+    {
+      "media_id": "d330c95337374ce2a60bbdcf7afa51ce",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 42.783
+    },
+    {
+      "media_id": "231fbd2c46f84ae1b510a899c49b8dca",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 42.782
+    },
+    {
+      "media_id": "2dc98d64c8b148feae9ec51adc5f92f8",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 42.782
+    },
+    {
+      "media_id": "d506ff07941c47ce8cd7025878c9a30c",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 42.782
+    },
+    {
+      "media_id": "980966cc969347feaa592c9814370725",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 42.782
+    },
+    {
+      "media_id": "ffe747f29caf43f79037b0a66cfc0776",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 42.782
+    },
+    {
+      "media_id": "175aa1364b6b45bf9f4f23660d6644c3",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.164
+    },
+    {
+      "media_id": "9b5cd8061a2642d4b37fd534dc3e1412",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 42.787
+    },
+    {
+      "media_id": "8ab30baa270f4495a2b907a8eac4dfe3",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.167
+    },
+    {
+      "media_id": "420eb6456e3b4d15b07439a3b9841567",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.17
+    },
+    {
+      "media_id": "96bfda0b56d442bcb59b12aedd6ea252",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.176
+    },
+    {
+      "media_id": "078429f41de040468a0d6d51d4917b17",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.179
+    },
+    {
+      "media_id": "f52660e02bb64781a34b546d9ee80730",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.178
+    },
+    {
+      "media_id": "cc99e494e78f4bfb875a98975d763638",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.18
+    },
+    {
+      "media_id": "f43a5a864173480e9f532bc7348de694",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.183
+    },
+    {
+      "media_id": "3c03474aacd74428a81567ee5ca71208",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.538
+    },
+    {
+      "media_id": "137bb63b402843d99eea8b966a1248d4",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.543
+    },
+    {
+      "media_id": "94a6d5c229664c849cbd750e1e428333",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.547
+    },
+    {
+      "media_id": "7ff9df6c0bbd425f89cf99909bd27576",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.551
+    },
+    {
+      "media_id": "b7fa9ca29ab443b1a8da9a44312aef89",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.924
+    },
+    {
+      "media_id": "a65d26fc12f94687845925c7f8581b2c",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.938
+    },
+    {
+      "media_id": "dd87a6fdaabe4f51b1ca315e18ec2839",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.943
+    },
+    {
+      "media_id": "fdbf84872bad4582bed121a667170b38",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.946
+    },
+    {
+      "media_id": "f7340d841d7641f595d1fb2fa4cbf12b",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.949
+    },
+    {
+      "media_id": "3c1ba20071a5436ba18e0b4e033c6380",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 43.953
+    },
+    {
+      "media_id": "c44f9ff395c242d291684635643c69e2",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 44.25
+    },
+    {
+      "media_id": "2908611445694d709e65c0dcfc773fa6",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 44.252
+    },
+    {
+      "media_id": "feb182a53aa3430cb23cc0a47923ac07",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 44.257
+    },
+    {
+      "media_id": "2266b088c723474990c1900986efc6e9",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 44.261
+    },
+    {
+      "media_id": "37cd49fcea2c443bae8148900c580df1",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 44.265
+    },
+    {
+      "media_id": "f92903e7c06b4d74a09195f7c6f9e2af",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 44.27
+    },
+    {
+      "media_id": "072c2bac07ce4602b70891873638d5c9",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 44.541
+    },
+    {
+      "media_id": "48627ab727fb40119bb871464b0d7f1a",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 44.545
+    },
+    {
+      "media_id": "d098102332db4d15b8c3917857c02e42",
+      "workspace": "ws_unverified",
+      "kind": "video",
+      "status": "published",
+      "latency_s": 44.549
+    },
+    {
+      "media_id": "f6077290c7ae4848b3a76321af7efe72",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 44.622
+    },
+    {
+      "media_id": "b08b343caca449c995bebeee39071c8d",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 44.402
+    },
+    {
+      "media_id": "50527e652fc9433f9812ecb0b5418534",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 44.181
+    },
+    {
+      "media_id": "4f5c8815f9ca43ab8c87229058a1de04",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 43.97
+    },
+    {
+      "media_id": "de275935c27740529958ead886f4ae5c",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 43.747
+    },
+    {
+      "media_id": "c38cedbac99140fb9819c101e6bb9a08",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 43.526
+    },
+    {
+      "media_id": "1fff173979224adfb2fb86505b4dad9c",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 43.301
+    },
+    {
+      "media_id": "73dbc6d35d4242d1a28f6491f9d9b20d",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 28.994
+    },
+    {
+      "media_id": "e6b0bc6715c64724a82bbbf54b315a94",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 28.775
+    },
+    {
+      "media_id": "7faf0455646e492daf9489b96fae877e",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 28.572
+    },
+    {
+      "media_id": "aacb600d9f9a4069a41fb1228acfd800",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 28.366
+    },
+    {
+      "media_id": "0609b2d08b7c433e84a1f2f835d85281",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 28.143
+    },
+    {
+      "media_id": "ac49f5ffeeba4323abb435a70858684c",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 27.919
+    },
+    {
+      "media_id": "44c49e972e1d44da8a9c79a5461d67f6",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 28.836
+    },
+    {
+      "media_id": "12f56a8d6dd142b88fa3024ad4535a32",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 28.63
+    },
+    {
+      "media_id": "90d13853b8974446b3e63412dae7a0e4",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 28.426
+    },
+    {
+      "media_id": "bb36de6630144d699f3bfda05afbcc83",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 29.401
+    },
+    {
+      "media_id": "c70acf8af59e454e9ee3db1a91560055",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 29.182
+    },
+    {
+      "media_id": "71c4c96aa1784a248d890797d1a1e991",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 28.961
+    },
+    {
+      "media_id": "b750052a877847f18f93b0471c89e515",
+      "workspace": "ws_verified",
+      "kind": "image",
+      "status": "published",
+      "latency_s": 28.759
+    }
+  ]
+}

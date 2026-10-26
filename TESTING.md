@@ -332,8 +332,8 @@ Watch terminal 3. You will see `provider_call_started`, then
 a growing `delay_s` — 2s, 4s, 8s, 16s.
 
 ```bash
-sleep 5  && look $ID "${MV[@]}"     # pending, still trying
-sleep 60 && look $ID "${MV[@]}"
+sleep 2 && look $ID "${MV[@]}"     # pending -- the first call is still in flight
+sleep 6 && look $ID "${MV[@]}"
 ```
 
 ```json
@@ -341,9 +341,26 @@ sleep 60 && look $ID "${MV[@]}"
 ```
 
 **It is held, not published, and `screened` is false.** The broken version
-published this. Roughly a minute to get there: five attempts, each costing the
-5s client timeout, with 2+4+8+16s of backoff between them. For impatience, set
-`MAX_ATTEMPTS=2` in `api/.env` and restart the worker.
+published this.
+
+The hold lands as soon as the *first* attempt fails — one client timeout, about
+five seconds — not after the whole retry budget is spent. Rule 5 applies from
+the first failure, so the item is visible to a moderator straight away:
+
+```bash
+curl -s localhost:8000/review "${AV[@]}" | python3 -m json.tool   # it is in here
+```
+
+Retrying continues underneath, and `screened` stays `false` the whole time, so a
+provisional hold is never mistaken for a decision. Because there is no provider
+result behind it, an admin cannot approve it either:
+
+```bash
+curl -s -X POST localhost:8000/review/$ID/approve "${AV[@]}"
+# 409  {"detail":{"reasons":["never_screened"],"status":"held"}}
+```
+
+A borderline score is a judgement call; an item with no score at all is not.
 
 Check nothing slipped through:
 
