@@ -1104,6 +1104,16 @@ the provider process. Call `POST /_admin/reset` first if you want these to
 describe only your own run — it zeroes the counters and returns the provider to
 `ok`.
 
+**`queue_depth._delayed` is not a backlog.** It counts entries scheduled in the
+Redis delayed set, which includes the timeout guard placed against every
+asynchronous callback. Submit a long video, let its callback land, and the guard
+stays scheduled until its own deadline passes — so `_delayed` can read `2` while
+`job_states` is `{"done": 2}` and nothing at all is waiting. The dispatcher drops
+each guard when it fires and finds the job already finished, and the count
+returns to zero on its own. **`oldest_waiting_job_age_s` is the number to trust
+for backlog**, because it is derived from job state in Postgres rather than from
+what is sitting in Redis.
+
 ---
 
 ## Following one item through the logs
